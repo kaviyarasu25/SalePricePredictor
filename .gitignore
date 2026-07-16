@@ -1,0 +1,4 @@
+model/*.pkl
+__pycache__/
+venv/
+.streamlit/secrets.toml
