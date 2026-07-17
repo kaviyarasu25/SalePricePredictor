@@ -24,8 +24,8 @@ st.set_page_config(
     layout="centered",
 )
 
-MODEL_PATH = os.environ.get("MODEL_PATH", "model/random_forest_model_v2.pkl")
-FEATURES_PATH = os.environ.get("FEATURES_PATH", "model/model_features_v2.pkl")
+MODEL_PATH = os.environ.get("MODEL_PATH", "model/random_forest_model.pkl")
+FEATURES_PATH = os.environ.get("FEATURES_PATH", "model/model_features.pkl")
 
 # If set, the model/features are downloaded from a Hugging Face Hub model
 # repo instead of read from local disk — used when deployed (e.g. on
