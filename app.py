@@ -35,6 +35,13 @@ HF_REPO_ID = os.environ.get("HF_REPO_ID", "")
 HF_MODEL_FILENAME = os.environ.get("HF_MODEL_FILENAME", "random_forest_model.pkl")
 HF_FEATURES_FILENAME = os.environ.get("HF_FEATURES_FILENAME", "model_features.pkl")
 
+# If true, load the model via memory-mapping instead of reading it fully
+# into RAM. Requires the model file to be an *uncompressed* joblib dump
+# (mmap is incompatible with compressed pickles) — set MODEL_MMAP=1 and
+# point HF_MODEL_FILENAME at the uncompressed file when running on
+# memory-constrained hosts (e.g. an EC2 t3.micro's 1GB RAM).
+MODEL_MMAP = os.environ.get("MODEL_MMAP", "0") == "1"
+
 CHARING_CROSS = (51.5074, -0.1278)
 
 # ----------------------------------------------------------------------
@@ -153,9 +160,11 @@ def get_extrapolation_multiplier(year: int) -> float:
 # ----------------------------------------------------------------------
 @st.cache_resource
 def load_model_and_features():
+    mmap_mode = "r" if MODEL_MMAP else None
+
     # Local files take priority — used for local development/testing.
     if os.path.exists(MODEL_PATH) and os.path.exists(FEATURES_PATH):
-        model = joblib.load(MODEL_PATH)
+        model = joblib.load(MODEL_PATH, mmap_mode=mmap_mode)
         feature_columns = joblib.load(FEATURES_PATH)
         return model, feature_columns
 
@@ -169,7 +178,7 @@ def load_model_and_features():
         except Exception as e:
             st.error(f"Could not download model from Hugging Face Hub ({HF_REPO_ID}): {e}")
             return None, None
-        model = joblib.load(model_path)
+        model = joblib.load(model_path, mmap_mode=mmap_mode)
         feature_columns = joblib.load(features_path)
         return model, feature_columns
 
