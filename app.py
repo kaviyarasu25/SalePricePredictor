@@ -114,7 +114,7 @@ _BASE_INDEX = MARKET_INDEX[_BASE_YEAR]
 # trained on. This is a simple projection, not a forecast.
 _EXTRAPOLATION_CAGR = (_LAST_KNOWN_INDEX / _BASE_INDEX) ** (1 / (_LAST_KNOWN_YEAR - _BASE_YEAR)) - 1
 
-DROPDOWN_MAX_YEAR = 2099
+DROPDOWN_MAX_YEAR = 2050
 
 
 def get_market_index(year: int) -> float:
@@ -513,14 +513,10 @@ On a held-out test set, this Random Forest model achieved:
 | 25th percentile % error | {MODEL_METRICS['p25_pct_error']:.2f}% |
 | 75th percentile % error | {MODEL_METRICS['p75_pct_error']:.2f}% |
 
-The **likely range** above is built from the median percentage error
+The **likely range** above is built from the percentage error
 (roughly half of test predictions fell within this margin of the true
 price) — a reasonable, typical-case spread around the central
 prediction.
-
-RMSE is notably higher than MAE, which indicates the model's errors are
-larger and less consistent for higher-value or unusual properties — so
-treat estimates for expensive or atypical homes with extra caution.
 """
             )
 
