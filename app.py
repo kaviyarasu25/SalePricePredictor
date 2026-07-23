@@ -446,7 +446,6 @@ if submitted:
             )
 
         low_typical, high_typical = price_range_from_error(price_pred, band="typical")
-        low_wide, high_wide = price_range_from_error(price_pred, band="wide")
 
         headline_label = (
             "Estimated Property Value"
@@ -454,11 +453,12 @@ if submitted:
             else f"Estimated Property Value (experimental {valuation_year} projection)"
         )
         st.success(f"### {headline_label}")
-        st.markdown(f"## £{low_wide:,.0f} – £{high_wide:,.0f}")
+        st.markdown(f"## £{price_pred:,.0f}")
         st.caption(
-            f"Central estimate: £{price_pred:,.0f}. Range reflects the "
-            "model's historical error distribution on held-out test data, "
-            "not a formal statistical confidence interval."
+            "This is the model's central prediction. The range below "
+            "reflects the model's historical error distribution on "
+            "held-out test data, not a formal statistical confidence "
+            "interval."
         )
 
         st.markdown(
@@ -470,7 +470,6 @@ if submitted:
                 border-radius: 8px;
                 padding: 12px 16px;
                 margin-bottom: 8px;
-                height: 100%;
             }
             .range-label {
                 font-size: 0.8rem;
@@ -489,27 +488,15 @@ if submitted:
             unsafe_allow_html=True,
         )
 
-        col1, col2 = st.columns(2)
-        with col1:
-            st.markdown(
-                f"""
-                <div class="range-box">
-                    <div class="range-label">Narrower range (typical case)</div>
-                    <div class="range-value">£{low_typical:,.0f} – £{high_typical:,.0f}</div>
-                </div>
-                """,
-                unsafe_allow_html=True,
-            )
-        with col2:
-            st.markdown(
-                f"""
-                <div class="range-box">
-                    <div class="range-label">Wider range (safer estimate)</div>
-                    <div class="range-value">£{low_wide:,.0f} – £{high_wide:,.0f}</div>
-                </div>
-                """,
-                unsafe_allow_html=True,
-            )
+        st.markdown(
+            f"""
+            <div class="range-box">
+                <div class="range-label">Likely range (typical case)</div>
+                <div class="range-value">£{low_typical:,.0f} – £{high_typical:,.0f}</div>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
 
         with st.expander("Model accuracy details"):
             st.markdown(
@@ -526,11 +513,10 @@ On a held-out test set, this Random Forest model achieved:
 | 25th percentile % error | {MODEL_METRICS['p25_pct_error']:.2f}% |
 | 75th percentile % error | {MODEL_METRICS['p75_pct_error']:.2f}% |
 
-The **narrower range** above is built from the median percentage error
+The **likely range** above is built from the median percentage error
 (roughly half of test predictions fell within this margin of the true
-price). The **wider range** uses the 75th percentile error (roughly
-three-quarters of test predictions fell within this margin) — a more
-conservative band, better suited for a single unverified estimate.
+price) — a reasonable, typical-case spread around the central
+prediction.
 
 RMSE is notably higher than MAE, which indicates the model's errors are
 larger and less consistent for higher-value or unusual properties — so
